@@ -5,14 +5,14 @@ public class Treasure {
     private int y;
     private char symbol;
     private int value;
-    private TextColor textcolor;
+    private TextColor color;
 
-    public Treasure(int x, int y, char symbol, int value, TextColor textcolor) {
+    public Treasure(int x, int y, char symbol, int value, TextColor color) {
         this.x = x;
         this.y = y;
         this.symbol = symbol;
         this.value = value;
-        this.textcolor = textcolor;
+        this.color = color;
     }
 
     public int getX() {
@@ -30,4 +30,9 @@ public class Treasure {
     public int getValue() {
         return value;
     }
+
+    public TextColor getColor() {
+        return color;
+    }
 }
+

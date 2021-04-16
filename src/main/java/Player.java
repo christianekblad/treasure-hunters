@@ -33,6 +33,14 @@ public class Player {
         return previousY;
     }
 
+    public boolean checkBlock(int sa) {  // to check if player hits blocked Score Area line
+        if ((y-1) <= sa) {
+            return false;
+        }
+        else
+            return true;
+    }
+
     public void moveUp(){
         previousX = x;
         previousY = y;

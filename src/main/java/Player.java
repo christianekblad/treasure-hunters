@@ -34,7 +34,7 @@ public class Player {
     }
 
     public boolean checkBlock(int sa) {  // to check if player hits blocked Score Area line
-        if ((y-1) <= sa) {
+        if ((y-2) <= sa) {
             return false;
         }
         else

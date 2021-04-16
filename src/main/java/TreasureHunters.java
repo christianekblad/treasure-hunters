@@ -126,7 +126,7 @@ public class TreasureHunters {
 
     private static ScoreArea createScoreArea() throws IOException{
 
-        ScoreArea scoreArea = new ScoreArea(0,2,'\u2550');
+        ScoreArea scoreArea = new ScoreArea(0,1,'\u2550');
         return scoreArea;
     }
 
@@ -158,7 +158,7 @@ public class TreasureHunters {
                 terminal.putCharacter(player.getSymbol());
                 terminal.setCursorPosition(player.getPreviousX(), player.getPreviousY());
                 terminal.bell();
-                treasure.setY (1);
+                treasure.setY (0);
                 treasure.setX (75);
                 terminal.setCursorPosition(treasure.getX(), treasure.getY());
                 terminal.putCharacter(treasure.getSymbol());

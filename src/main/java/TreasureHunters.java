@@ -24,6 +24,8 @@ public class TreasureHunters {
     private static void startGame() throws IOException, InterruptedException {
         Terminal terminal = createTerminal();
 
+        ScoreArea scoreArea = createScoreArea();
+
         Player player = createPlayer();
 
         List<Monster> monsters = createMonsters();
@@ -32,7 +34,8 @@ public class TreasureHunters {
 
         drawTreasures(terminal, treasures);
 
-        drawCharacters(terminal, player, monsters, treasures);
+        drawCharacters(terminal, scoreArea, player, monsters, treasures);
+
 
 
 
@@ -40,11 +43,11 @@ public class TreasureHunters {
         do {
             KeyStroke keyStroke = getUserKeyStroke(terminal);
 
-            movePlayer(player, keyStroke);
+            movePlayer(player, keyStroke,scoreArea);
 
             moveMonsters(player, monsters);
 
-            drawCharacters(terminal, player, monsters, treasures);
+            drawCharacters(terminal, scoreArea, player, monsters, treasures);
 
         } while (isPlayerAlive(player, monsters));
 
@@ -61,21 +64,27 @@ public class TreasureHunters {
         }
     }
 
-    private static void movePlayer(Player player, KeyStroke keyStroke) {
-        switch (keyStroke.getKeyType()) {
-            case ArrowUp:
-                player.moveUp();
-                break;
-            case ArrowDown:
-                player.moveDown();
-                break;
-            case ArrowLeft:
-                player.moveLeft();
-                break;
-            case ArrowRight:
-                player.moveRight();
-                break;
-        }
+    private static void movePlayer(Player player, KeyStroke keyStroke , ScoreArea scoreArea) {
+
+
+            switch (keyStroke.getKeyType()) {
+                case ArrowUp:
+                    if (player.checkBlock(scoreArea.getY())) {
+                        player.moveUp();
+                    }
+                    break;
+                case ArrowDown:
+                    player.moveDown();
+                    break;
+                case ArrowLeft:
+                    player.moveLeft();
+                    break;
+                case ArrowRight:
+                    player.moveRight();
+                    break;
+            }
+
+
     }
 
     private static KeyStroke getUserKeyStroke(Terminal terminal) throws InterruptedException, IOException {
@@ -88,7 +97,7 @@ public class TreasureHunters {
     }
 
     private static Player createPlayer() {
-        return new Player(10, 10, '\u263a');
+        return new Player(10, 10, '\u0398');
     }
 
     private static List<Monster> createMonsters() {
@@ -115,7 +124,14 @@ public class TreasureHunters {
         return terminal;
     }
 
-    private static void drawCharacters(Terminal terminal, Player player, List<Monster> monsters, List<Treasure> treasures) throws IOException {
+    private static ScoreArea createScoreArea() throws IOException{
+
+        ScoreArea scoreArea = new ScoreArea(0,2,'\u2550');
+        return scoreArea;
+    }
+
+
+    private static void drawCharacters(Terminal terminal, ScoreArea scoreArea, Player player, List<Monster> monsters, List<Treasure> treasures) throws IOException {
         terminal.setForegroundColor(TextColor.ANSI.WHITE);
         for (Monster monster : monsters) {
             terminal.setCursorPosition(monster.getPreviousX(), monster.getPreviousY());
@@ -124,7 +140,10 @@ public class TreasureHunters {
             terminal.setCursorPosition(monster.getX(), monster.getY());
             terminal.putCharacter(monster.getSymbol());
         }
-
+        for (int x = scoreArea.getX(); x < 80;x++) {   // Printing the score area line
+            terminal.setCursorPosition(x, scoreArea.getY());
+            terminal.putCharacter(scoreArea.getSymbol());
+        }
 
         terminal.setCursorPosition(player.getPreviousX(), player.getPreviousY());
         terminal.putCharacter(' ');

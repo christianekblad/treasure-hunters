@@ -27,12 +27,20 @@ public class Treasure {
         return symbol;
     }
 
-    public int getValue() {
+        public int getValue() {
         return value;
     }
 
     public TextColor getColor() {
         return color;
+                    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void setY(int y) {
+        this.y = y;
     }
 }
 

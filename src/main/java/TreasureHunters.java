@@ -30,10 +30,11 @@ public class TreasureHunters {
 
         List<Treasure> treasures = createTreasures();
 
+        drawTreasures(terminal, treasures);
 
         drawCharacters(terminal, player, monsters, treasures);
 
-        drawTreasures(terminal, treasures);
+
 
 
         do {
@@ -92,18 +93,18 @@ public class TreasureHunters {
 
     private static List<Monster> createMonsters() {
         List<Monster> monsters = new ArrayList<>();
-        monsters.add(new Monster(3, 3, 'X'));
-        monsters.add(new Monster(23, 23, 'X'));
-        monsters.add(new Monster(23, 3, 'C'));
-        monsters.add(new Monster(3, 23, 'X'));
+        monsters.add(new Monster(3, 3, 'M'));
+        monsters.add(new Monster(23, 23, 'M'));
+        monsters.add(new Monster(23, 3, 'M'));
+        monsters.add(new Monster(3, 23, 'M'));
         return monsters;
     }
 
     private static List<Treasure> createTreasures() {
         List<Treasure> treasures = new ArrayList<>();
-        treasures.add(new Treasure(12, 10, '$',50, TextColor.ANSI.GREEN));
-        treasures.add(new Treasure(14, 10, '£',100, TextColor.ANSI.YELLOW));
-        treasures.add(new Treasure(16, 10, '€',150, TextColor.ANSI.BLUE));
+        treasures.add(new Treasure(78, 4, '$',50, TextColor.ANSI.GREEN));
+        treasures.add(new Treasure(18, 10, '£',100, TextColor.ANSI.YELLOW));
+        treasures.add(new Treasure(22, 12, '€',150, TextColor.ANSI.BLUE));
         return treasures;
     }
 
@@ -115,6 +116,7 @@ public class TreasureHunters {
     }
 
     private static void drawCharacters(Terminal terminal, Player player, List<Monster> monsters, List<Treasure> treasures) throws IOException {
+        terminal.setForegroundColor(TextColor.ANSI.WHITE);
         for (Monster monster : monsters) {
             terminal.setCursorPosition(monster.getPreviousX(), monster.getPreviousY());
             terminal.putCharacter(' ');
@@ -136,7 +138,11 @@ public class TreasureHunters {
                 terminal.setCursorPosition(player.getX(), player.getY());
                 terminal.putCharacter(player.getSymbol());
                 terminal.setCursorPosition(player.getPreviousX(), player.getPreviousY());
-                terminal.putCharacter('O');
+                terminal.bell();
+                treasure.setY (1);
+                treasure.setX (75);
+                terminal.setCursorPosition(treasure.getX(), treasure.getY());
+                terminal.putCharacter(treasure.getSymbol());
             }
 
     }
@@ -145,8 +151,9 @@ public class TreasureHunters {
     private static void drawTreasures (Terminal terminal, List<Treasure> treasures) throws IOException{
         for (Treasure treasure:treasures){
             terminal.setCursorPosition(treasure.getX(), treasure.getY());
-            terminal.putCharacter(treasure.getSymbol());
             terminal.setForegroundColor(treasure.getColor());
+            terminal.putCharacter(treasure.getSymbol());
+
         }
     }
 

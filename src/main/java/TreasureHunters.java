@@ -12,6 +12,7 @@ import java.util.List;
 
 public class TreasureHunters {
     static int score=0;
+    static int treasuresLeft = 5;
 
     public static void main(String[] args) {
         try {
@@ -23,6 +24,12 @@ public class TreasureHunters {
             System.out.println("Game over!");
         }
 
+    }
+
+    private static void gameOver(Terminal terminal) throws IOException {
+        final TextGraphics textGraphics = terminal.newTextGraphics();
+        //terminal.setForegroundColor(TextColor.ANSI.RED);
+        textGraphics.putString(35, 11, "GAME OVER", SGR.BLINK, SGR.BOLD);
     }
 
     private static void startGame() throws IOException, InterruptedException {
@@ -60,6 +67,7 @@ public class TreasureHunters {
         terminal.setCursorPosition(player.getX(), player.getY());
         terminal.putCharacter(player.getSymbol());
         terminal.bell();
+        gameOver(terminal);
         terminal.flush();
     }
 
@@ -102,23 +110,26 @@ public class TreasureHunters {
     }
 
     private static Player createPlayer() {
-        return new Player(10, 10, '\u0398');
+        return new Player(40, 12, '\u0398');
     }
 
     private static List<Monster> createMonsters() {
         List<Monster> monsters = new ArrayList<>();
-        monsters.add(new Monster(3, 3, 'M'));
-        monsters.add(new Monster(23, 23, 'M'));
-        monsters.add(new Monster(23, 3, 'M'));
-        monsters.add(new Monster(3, 23, 'M'));
+        monsters.add(new Monster(63, 3, 'M', TextColor.ANSI.MAGENTA));
+        monsters.add(new Monster(23, 22, 'M', TextColor.ANSI.MAGENTA));
+        monsters.add(new Monster(23, 3, 'M', TextColor.ANSI.MAGENTA));
+        monsters.add(new Monster(63, 22, 'M', TextColor.ANSI.MAGENTA));
         return monsters;
     }
 
     private static List<Treasure> createTreasures() {
         List<Treasure> treasures = new ArrayList<>();
         treasures.add(new Treasure(78, 4, '$',50, TextColor.ANSI.GREEN));
-        treasures.add(new Treasure(18, 10, '£',100, TextColor.ANSI.YELLOW));
-        treasures.add(new Treasure(22, 12, '€',150, TextColor.ANSI.CYAN));
+        treasures.add(new Treasure(2, 10, '£',100, TextColor.ANSI.YELLOW));
+        treasures.add(new Treasure(50, 6, '€',150, TextColor.ANSI.CYAN));
+        treasures.add(new Treasure(22, 18, '$',50, TextColor.ANSI.GREEN));
+        treasures.add(new Treasure(38, 22, '£',100, TextColor.ANSI.YELLOW));
+        treasures.add(new Treasure(72, 12, '€',150, TextColor.ANSI.CYAN));
         return treasures;
     }
 
@@ -138,14 +149,18 @@ public class TreasureHunters {
 
 
     private static void drawCharacters(Terminal terminal, ScoreArea scoreArea, Player player, List<Monster> monsters, List<Treasure> treasures) throws IOException {
-        terminal.setForegroundColor(TextColor.ANSI.WHITE);
+
         for (Monster monster : monsters) {
             terminal.setCursorPosition(monster.getPreviousX(), monster.getPreviousY());
+            terminal.setForegroundColor(TextColor.ANSI.BLACK);
             terminal.putCharacter(' ');
 
+            terminal.setForegroundColor(monster.getColor());
             terminal.setCursorPosition(monster.getX(), monster.getY());
             terminal.putCharacter(monster.getSymbol());
+
         }
+        terminal.setForegroundColor(TextColor.ANSI.WHITE);
         for (int x = scoreArea.getX(); x < 79;x++) {   // Printing the score area line
             terminal.setCursorPosition(x, scoreArea.getY());
             terminal.putCharacter(scoreArea.getSymbol());
@@ -159,21 +174,30 @@ public class TreasureHunters {
 
         final TextGraphics textGraphics = terminal.newTextGraphics();
 
-        for (Treasure treasure:treasures){
+        for (Treasure treasure:treasures) {
             if (player.getX() == treasure.getX() && player.getY()==treasure.getY())
             {
                 terminal.setCursorPosition(player.getX(), player.getY());
                 terminal.putCharacter(player.getSymbol());
                 terminal.setCursorPosition(player.getPreviousX(), player.getPreviousY());
-                terminal.bell();
+                //terminal.bell();
                 treasure.setY (0);
                 treasure.setX (75);
                 terminal.setCursorPosition(treasure.getX(), treasure.getY());
                 terminal.putCharacter(treasure.getSymbol());
                 score +=treasure.getValue();
                 textGraphics.putString(7, 0, " " + score, SGR.BOLD);
+                treasuresLeft = treasuresLeft -1;
+                System.out.println(treasuresLeft);
+                if (treasuresLeft == 0) {
+                    terminal.setCursorPosition(78, 20);
+                    terminal.putCharacter('\u2588');
+                }
             }
-
+            if (treasuresLeft == 0 && player.getX() == 78 && player.getY() == 20) {
+                terminal.setForegroundColor(TextColor.ANSI.WHITE);
+                textGraphics.putString(36, 11, "YOU WON!", SGR.BLINK, SGR.BOLD);
+            }
     }
         terminal.flush();
     }
@@ -186,7 +210,7 @@ public class TreasureHunters {
         }
     }
 
-    private static boolean isPlayerAlive(Player player, List<Monster> monsters) {
+    private static boolean isPlayerAlive(Player player, List<Monster> monsters){
         for (Monster monster : monsters) {
             if (monster.getX() == player.getX() && monster.getY() == player.getY()) {
                 return false;

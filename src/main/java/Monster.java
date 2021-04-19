@@ -1,16 +1,20 @@
+import com.googlecode.lanterna.TextColor;
+
 public class Monster {
     private int x;
     private int y;
     private char symbol;
     private int previousX;
     private int previousY;
+    private TextColor color;
 
-    public Monster(int x, int y, char symbol) {
+    public Monster(int x, int y, char symbol, TextColor color) {
         this.x = x;
         this.y = y;
         this.symbol = symbol;
         this.previousX = x;
         this.previousY = y;
+        this.color = color;
     }
 
     public int getX() {
@@ -19,6 +23,10 @@ public class Monster {
 
     public int getY() {
         return y;
+    }
+
+    public TextColor getColor() {
+        return color;
     }
 
     public char getSymbol() {

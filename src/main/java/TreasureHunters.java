@@ -29,12 +29,14 @@ public class TreasureHunters {
     private static void gameOver(Terminal terminal) throws IOException {
         final TextGraphics textGraphics = terminal.newTextGraphics();
         //terminal.setForegroundColor(TextColor.ANSI.RED);
-        textGraphics.putString(35, 11, "GAME OVER", SGR.BLINK, SGR.BOLD);
+        textGraphics.putString(32, 11, "G A M E   O V E R", SGR.BLINK, SGR.BOLD);
     }
 
     private static void startGame() throws IOException, InterruptedException {
 
         Terminal terminal = createTerminal();
+
+        drawLogo(terminal);
 
         ScoreArea scoreArea = createScoreArea(terminal);
 
@@ -140,9 +142,22 @@ public class TreasureHunters {
         return terminal;
     }
 
+    private static void drawLogo(Terminal terminal) throws InterruptedException, IOException {
+        final TextGraphics textGraphics = terminal.newTextGraphics();
+        textGraphics.putString(10, 8, "___    ____    ____    ____    ____    _  _    ____    ____", SGR.BOLD);
+        textGraphics.putString(10, 9, " |     |__/    |___    |__|    [__     |  |    |__/    |___ ", SGR.BOLD);
+        textGraphics.putString(10, 10, " |     |  \\    |___    |  |    ___]    |__|    |  \\    |___ ", SGR.BOLD);
+        textGraphics.putString(14, 12, "_  _    _  _    _  _    ___    ____    ____    ____         ", SGR.BOLD);
+        textGraphics.putString(14, 13, "|__|    |  |    |\\ |     |     |___    |__/    [__          ", SGR.BOLD);
+        textGraphics.putString(14, 14, "|  |    |__|    | \\|     |     |___    |  \\    ___]         ", SGR.BOLD);
+        Thread.sleep(3000);
+        terminal.clearScreen();
+    }
+
     private static ScoreArea createScoreArea(Terminal terminal) throws IOException{
         final TextGraphics textGraphics = terminal.newTextGraphics();
         textGraphics.putString(1, 0, "SCORE: " + score, SGR.BOLD);
+        textGraphics.putString(25, 0, "T R E A S U R E   H U N T E R S", SGR.BOLD);
         ScoreArea scoreArea = new ScoreArea(1,1,'\u2550');
         return scoreArea;
     }
@@ -196,7 +211,7 @@ public class TreasureHunters {
             }
             if (treasuresLeft == 0 && player.getX() == 78 && player.getY() == 20) {
                 terminal.setForegroundColor(TextColor.ANSI.WHITE);
-                textGraphics.putString(36, 11, "YOU WON!", SGR.BLINK, SGR.BOLD);
+                textGraphics.putString(32, 11, "Y O U   W O N !", SGR.BLINK, SGR.BOLD);
             }
     }
         terminal.flush();

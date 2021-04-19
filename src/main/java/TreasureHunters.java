@@ -8,11 +8,15 @@ import com.googlecode.lanterna.graphics.TextGraphics;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 
 public class TreasureHunters {
     static int score=0;
-    static int treasuresLeft = 5;
+    static int treasuresLeft = 6;
+    static int doorX =  -1;
+    static int doorY = -1;
+
 
     public static void main(String[] args) {
         try {
@@ -68,7 +72,6 @@ public class TreasureHunters {
         terminal.setForegroundColor(TextColor.ANSI.RED);
         terminal.setCursorPosition(player.getX(), player.getY());
         terminal.putCharacter(player.getSymbol());
-        terminal.bell();
         gameOver(terminal);
         terminal.flush();
     }
@@ -126,14 +129,37 @@ public class TreasureHunters {
 
     private static List<Treasure> createTreasures() {
         List<Treasure> treasures = new ArrayList<>();
-        treasures.add(new Treasure(78, 4, '$',50, TextColor.ANSI.GREEN));
-        treasures.add(new Treasure(2, 10, '£',100, TextColor.ANSI.YELLOW));
-        treasures.add(new Treasure(50, 6, '€',150, TextColor.ANSI.CYAN));
+
+
+
+
+
+        treasures.add(new Treasure(getEven(80),getEven(22)+2, '$',50, TextColor.ANSI.GREEN));
+        treasures.add(new Treasure(getEven(80),getEven(22)+2, '£',100, TextColor.ANSI.YELLOW));
+        treasures.add(new Treasure(getEven(80),getEven(22)+2, '€',150, TextColor.ANSI.CYAN));
+        treasures.add(new Treasure(getEven(80),getEven(22)+2, '$',50, TextColor.ANSI.GREEN));
+        treasures.add(new Treasure(getEven(80),getEven(22)+2, '£',100, TextColor.ANSI.YELLOW));
+        treasures.add(new Treasure(getEven(80),getEven(22)+2,'€',150, TextColor.ANSI.CYAN));
+
+        /*  treasures.add(new Treasure(50, 6, '€',150, TextColor.ANSI.CYAN));
         treasures.add(new Treasure(22, 18, '$',50, TextColor.ANSI.GREEN));
         treasures.add(new Treasure(38, 22, '£',100, TextColor.ANSI.YELLOW));
-        treasures.add(new Treasure(72, 12, '€',150, TextColor.ANSI.CYAN));
+        treasures.add(new Treasure(72, 12, '€',150, TextColor.ANSI.CYAN)); */
         return treasures;
     }
+
+    private static int getEven (int val){
+        Random r = new Random();
+        int value = r.nextInt (val);
+        if (value % 2== 0)   {
+            return value;
+        }
+        else {
+            return value-1;
+        }
+
+        }
+
 
     private static Terminal createTerminal() throws IOException {
         DefaultTerminalFactory terminalFactory = new DefaultTerminalFactory();
@@ -144,14 +170,19 @@ public class TreasureHunters {
 
     private static void drawLogo(Terminal terminal) throws InterruptedException, IOException {
         final TextGraphics textGraphics = terminal.newTextGraphics();
-        textGraphics.putString(10, 8, "___    ____    ____    ____    ____    _  _    ____    ____", SGR.BOLD);
-        textGraphics.putString(10, 9, " |     |__/    |___    |__|    [__     |  |    |__/    |___ ", SGR.BOLD);
-        textGraphics.putString(10, 10, " |     |  \\    |___    |  |    ___]    |__|    |  \\    |___ ", SGR.BOLD);
-        textGraphics.putString(14, 12, "_  _    _  _    _  _    ___    ____    ____    ____         ", SGR.BOLD);
-        textGraphics.putString(14, 13, "|__|    |  |    |\\ |     |     |___    |__/    [__          ", SGR.BOLD);
-        textGraphics.putString(14, 14, "|  |    |__|    | \\|     |     |___    |  \\    ___]         ", SGR.BOLD);
-        Thread.sleep(3000);
+        textGraphics.putString(10, 5, "___    ____    ____    ____    ____    _  _    ____    ____", SGR.BOLD);
+        textGraphics.putString(10, 6, " |     |__/    |___    |__|    [__     |  |    |__/    |___ ", SGR.BOLD);
+        textGraphics.putString(10, 7, " |     |  \\    |___    |  |    ___]    |__|    |  \\    |___ ", SGR.BOLD);
+        textGraphics.putString(14, 9, "_  _    _  _    _  _    ___    ____    ____    ____         ", SGR.BOLD);
+        textGraphics.putString(14, 10, "|__|    |  |    |\\ |     |     |___    |__/    [__          ", SGR.BOLD);
+        textGraphics.putString(14, 11, "|  |    |__|    | \\|     |     |___    |  \\    ___]         ", SGR.BOLD);
+        textGraphics.putString(20, 15, " * COLLECT TREASURES TO RAISE YOUR SCORE", SGR.ITALIC);
+        textGraphics.putString(20, 17, " * ESCAPE MONSTERS", SGR.ITALIC);
+        textGraphics.putString(20, 19, " * EXIT THROUGH THE DOOR TO WIN", SGR.ITALIC);
+        textGraphics.putString(14, 23, " Game developed by: Anna, Christian, Nicole & Per ");
+        Thread.sleep(5000);
         terminal.clearScreen();
+
     }
 
     private static ScoreArea createScoreArea(Terminal terminal) throws IOException{
@@ -189,8 +220,12 @@ public class TreasureHunters {
 
         final TextGraphics textGraphics = terminal.newTextGraphics();
 
+        drawTreasures(terminal, treasures);
+
         for (Treasure treasure:treasures) {
-            if (player.getX() == treasure.getX() && player.getY()==treasure.getY())
+
+
+             if (player.getX() == treasure.getX() && player.getY()==treasure.getY())
             {
                 terminal.setCursorPosition(player.getX(), player.getY());
                 terminal.putCharacter(player.getSymbol());
@@ -205,11 +240,13 @@ public class TreasureHunters {
                 treasuresLeft = treasuresLeft -1;
                 System.out.println(treasuresLeft);
                 if (treasuresLeft == 0) {
-                    terminal.setCursorPosition(78, 20);
+                    doorX= getEven(80);
+                    doorY= getEven(22)+2;
+                    terminal.setCursorPosition(doorX, doorY);
                     terminal.putCharacter('\u2588');
                 }
             }
-            if (treasuresLeft == 0 && player.getX() == 78 && player.getY() == 20) {
+            if (treasuresLeft == 0 && player.getX() == doorX && player.getY() == doorY) {
                 terminal.setForegroundColor(TextColor.ANSI.WHITE);
                 textGraphics.putString(32, 11, "Y O U   W O N !", SGR.BLINK, SGR.BOLD);
             }

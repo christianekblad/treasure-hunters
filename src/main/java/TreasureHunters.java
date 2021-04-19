@@ -1,13 +1,17 @@
+import com.googlecode.lanterna.SGR;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
+import com.googlecode.lanterna.graphics.TextGraphics;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class TreasureHunters {
+    static int score=0;
 
     public static void main(String[] args) {
         try {
@@ -22,9 +26,10 @@ public class TreasureHunters {
     }
 
     private static void startGame() throws IOException, InterruptedException {
+
         Terminal terminal = createTerminal();
 
-        ScoreArea scoreArea = createScoreArea();
+        ScoreArea scoreArea = createScoreArea(terminal);
 
         Player player = createPlayer();
 
@@ -113,7 +118,7 @@ public class TreasureHunters {
         List<Treasure> treasures = new ArrayList<>();
         treasures.add(new Treasure(78, 4, '$',50, TextColor.ANSI.GREEN));
         treasures.add(new Treasure(18, 10, '£',100, TextColor.ANSI.YELLOW));
-        treasures.add(new Treasure(22, 12, '€',150, TextColor.ANSI.BLUE));
+        treasures.add(new Treasure(22, 12, '€',150, TextColor.ANSI.CYAN));
         return treasures;
     }
 
@@ -124,9 +129,10 @@ public class TreasureHunters {
         return terminal;
     }
 
-    private static ScoreArea createScoreArea() throws IOException{
-
-        ScoreArea scoreArea = new ScoreArea(0,1,'\u2550');
+    private static ScoreArea createScoreArea(Terminal terminal) throws IOException{
+        final TextGraphics textGraphics = terminal.newTextGraphics();
+        textGraphics.putString(1, 0, "SCORE: " + score, SGR.BOLD);
+        ScoreArea scoreArea = new ScoreArea(1,1,'\u2550');
         return scoreArea;
     }
 
@@ -140,7 +146,7 @@ public class TreasureHunters {
             terminal.setCursorPosition(monster.getX(), monster.getY());
             terminal.putCharacter(monster.getSymbol());
         }
-        for (int x = scoreArea.getX(); x < 80;x++) {   // Printing the score area line
+        for (int x = scoreArea.getX(); x < 79;x++) {   // Printing the score area line
             terminal.setCursorPosition(x, scoreArea.getY());
             terminal.putCharacter(scoreArea.getSymbol());
         }
@@ -150,6 +156,8 @@ public class TreasureHunters {
 
         terminal.setCursorPosition(player.getX(), player.getY());
         terminal.putCharacter(player.getSymbol());
+
+        final TextGraphics textGraphics = terminal.newTextGraphics();
 
         for (Treasure treasure:treasures){
             if (player.getX() == treasure.getX() && player.getY()==treasure.getY())
@@ -162,6 +170,8 @@ public class TreasureHunters {
                 treasure.setX (75);
                 terminal.setCursorPosition(treasure.getX(), treasure.getY());
                 terminal.putCharacter(treasure.getSymbol());
+                score +=treasure.getValue();
+                textGraphics.putString(7, 0, " " + score, SGR.BOLD);
             }
 
     }
